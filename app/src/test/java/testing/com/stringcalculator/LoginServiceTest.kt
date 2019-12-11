@@ -5,11 +5,19 @@ import org.junit.Test
 
 class LoginServiceTest {
 
-    var loginService = LoginService()
+    var loginService = LoginService(object : TimeProvider {
+        override fun getTime(): Long = if (evenTime) {
+            validEvenTime
+        } else {
+            invalidEventTime
+        }
+
+    })
     val validCredentials = Pair("admin", "admin")
     val invalidCredentials = Pair("other", "other")
     val validEvenTime = 2L
     val invalidEventTime = 3L
+    var evenTime = true
 
 
     @Test()
@@ -20,6 +28,7 @@ class LoginServiceTest {
 
     @Test()
     fun thatCannotLoginWithInvalidCredentials() {
+
         val result = loginService.logIn(invalidCredentials.first, invalidCredentials.second)
         Assert.assertFalse(result)
     }
@@ -27,13 +36,15 @@ class LoginServiceTest {
 
     @Test()
     fun thatCanLogoutInEven() {
-        val result = loginService.logOut(validEvenTime)
+        evenTime = true
+        val result = loginService.logOut()
         Assert.assertTrue(result)
     }
 
     @Test()
     fun thatCannotLogoutInEven() {
-        val result = loginService.logOut(invalidEventTime)
+        evenTime = false
+        val result = loginService.logOut()
         Assert.assertFalse(result)
     }
 }

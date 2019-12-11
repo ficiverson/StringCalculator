@@ -10,7 +10,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     var state: State = State.LOGIN
-    val loginService = LoginService()
+    val loginService = LoginService(object : TimeProvider {
+        override fun getTime(): Long = System.currentTimeMillis()
+    })
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                 button.setText("Logout")
                 username.visibility = View.GONE
                 pass.visibility = View.GONE
-            } else if (State.LOGOUT == state && loginService.logOut(System.currentTimeMillis())) {
+            } else if (State.LOGOUT == state && loginService.logOut()) {
                 state = State.LOGIN
                 button.setText("Login")
                 username.visibility = View.VISIBLE

@@ -1,8 +1,14 @@
 package testing.com.stringcalculator
 
-class LoginService {
+class LoginService(
+    private val timeProvider: TimeProvider
+) {
 
     fun logIn(user: String, pass: String): Boolean = user == "admin" && pass == "admin"
 
-    fun logOut(time : Long) = time % 2L == 0L
+    fun logOut() = timeProvider.getTime() % 2L == 0L
+}
+
+interface TimeProvider {
+    fun getTime(): Long
 }
