@@ -1,23 +1,39 @@
 package testing.com.stringcalculator
 
+import android.app.Activity
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
-import android.view.MenuItem
-
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class MainActivity : AppCompatActivity() {
+
+    var state: State = State.LOGIN
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        button.setText("Login")
+        button.setOnClickListener { view ->
+            if (State.LOGIN == state && username.text.toString() == "admin" && pass.text.toString() == "admin") {
+                state = State.LOGOUT
+                button.setText("Logout")
+                username.visibility = View.GONE
+                pass.visibility = View.GONE
+                hideKeyboardFrom()
+            } else if (State.LOGOUT == state && isTimeEven()) {
+                state = State.LOGIN
+                button.setText("Login")
+                username.visibility = View.VISIBLE
+                pass.visibility = View.VISIBLE
+            } else {
+                Snackbar.make(view, "Invalid credentials", Snackbar.LENGTH_LONG)
+                    .setAction("Close", null).show()
+            }
         }
     }
 
@@ -27,13 +43,16 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
+    private fun isTimeEven(): Boolean {
+        return System.currentTimeMillis() % 2.0 == 0.0
     }
+
+    private fun hideKeyboardFrom() {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+    }
+}
+
+enum class State {
+    LOGOUT, LOGIN
 }
