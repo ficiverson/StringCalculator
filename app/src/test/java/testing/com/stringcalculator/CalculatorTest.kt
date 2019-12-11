@@ -3,34 +3,24 @@ package testing.com.stringcalculator
 import org.junit.Assert
 import org.junit.Test
 
-class CalculatorTest{
-    @Test
-    fun thatCanAddInputAnEmptyValue() {
-        val result = Calculator().add("")
-        Assert.assertEquals(0, result)
-    }
+class CalculatorTest {
 
-    @Test
-    fun thatCanAddInputAInvalidInput() {
-        val result = Calculator().add("Paquito")
-        Assert.assertEquals(0, result)
-    }
+    private val scenarios = listOf(
+        Pair("", 0),
+        Pair("Paquito", 0),
+        Pair("1", 1),
+        Pair("1,1", 2),
+        Pair("11,22,33", 66), Pair("11,-22,33", 22),
+        Pair("1,1,Buf", 2),
+        Pair("1 , 1", 2),
+        Pair("1,1/n2", 4)
+    )
 
-    @Test
-    fun thatCanAddInputANumber() {
-        val result = Calculator().add("1")
-        Assert.assertEquals(1, result)
-    }
-
-    @Test
-    fun thatCanAddInputASecuenceOfNumbers() {
-        val result = Calculator().add("1,1")
-        Assert.assertEquals(2, result)
-    }
-
-    @Test
-    fun thatCanAddInputASecuenceOfNumbersAndInvalidINputs() {
-        val result = Calculator().add("1,1,Buf")
-        Assert.assertEquals(2, result)
+    @Test(expected = NegativeException::class)
+    fun thatCanAddInputAnyValue() {
+        scenarios.forEach {
+            val result = Calculator().add(it.first)
+            Assert.assertEquals(it.second, result)
+        }
     }
 }
