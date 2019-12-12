@@ -1,34 +1,25 @@
 package testing.com.stringcalculator
 
+import org.junit.After
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 
 class LoginServiceTest {
-
-    var loginService = LoginService(object : TimeProvider {
-        override fun getTime(): Long = if (evenTime) {
-            validEvenTime
-        } else {
-            invalidEventTime
-        }
-
-    })
     val validCredentials = Pair("admin", "admin")
     val invalidCredentials = Pair("other", "other")
-    val validEvenTime = 2L
-    val invalidEventTime = 3L
-    var evenTime = true
 
 
     @Test()
     fun thatCanLoginWithValidCredentials() {
+        val loginService  = LoginService(TimeProviderInstrument().givenATimeProvider())
         val result = loginService.logIn(validCredentials.first, validCredentials.second)
         Assert.assertTrue(result)
     }
 
     @Test()
     fun thatCannotLoginWithInvalidCredentials() {
-
+        val loginService  = LoginService(TimeProviderInstrument().givenATimeProvider())
         val result = loginService.logIn(invalidCredentials.first, invalidCredentials.second)
         Assert.assertFalse(result)
     }
@@ -36,15 +27,26 @@ class LoginServiceTest {
 
     @Test()
     fun thatCanLogoutInEven() {
-        evenTime = true
+        val loginService  = LoginService(TimeProviderInstrument().givenATimeProvider())
         val result = loginService.logOut()
         Assert.assertTrue(result)
     }
 
     @Test()
-    fun thatCannotLogoutInEven() {
-        evenTime = false
+    fun thatCannotLogoutInOdd() {
+        val loginService  = LoginService(TimeProviderInstrument().givenATimeProvider(isEven = false))
         val result = loginService.logOut()
         Assert.assertFalse(result)
+    }
+}
+
+class TimeProviderInstrument {
+    fun givenATimeProvider(isEven: Boolean = true) = object : TimeProvider {
+        override fun getTime(): Long = if (isEven) {
+            2L
+        } else {
+            3L
+        }
+
     }
 }
